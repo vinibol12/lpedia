@@ -1,0 +1,6 @@
+@Lpedia_HostAddress = http://localhost:5218
+
+GET {{Lpedia_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

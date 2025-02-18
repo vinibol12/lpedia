@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lpedia", "Lpedia.csproj", "{40C638D7-AE9D-237E-C765-ACE121C55D0B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{40C638D7-AE9D-237E-C765-ACE121C55D0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40C638D7-AE9D-237E-C765-ACE121C55D0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40C638D7-AE9D-237E-C765-ACE121C55D0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40C638D7-AE9D-237E-C765-ACE121C55D0B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0995E7D9-8E28-4130-8841-FFD4CC760879}
+	EndGlobalSection
+EndGlobal
