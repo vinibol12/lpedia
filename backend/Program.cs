@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     WebRootPath = "wwwroot",
     ContentRootPath = AppContext.BaseDirectory,
     ApplicationName = typeof(Program).Assembly.FullName,
-    EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"
+    EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development"
 });
 
 // Configure Serilog
