@@ -33,7 +33,7 @@ builder.Services.AddCors(options =>
     {
         policyBuilder.WithOrigins(builder.Environment.IsDevelopment() 
             ? new[] { "http://localhost:3000", "http://localhost:3001" } // Allow the frontend origins in development
-            : new[] { "https://your-frontend-url.com" }) // Allow the production origin
+            : new[] { "https://salmon-ocean-04da24500.4.azurestaticapps.net" }) // Allow the production origin
                .AllowAnyHeader()
                .AllowAnyMethod();
     });
