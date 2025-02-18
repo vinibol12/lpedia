@@ -42,6 +42,14 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Log CORS headers middleware
+app.Use(async (context, next) =>
+{
+    await next();
+    var corsHeaders = context.Response.Headers["Access-Control-Allow-Origin"];
+    Console.WriteLine($"CORS Headers: {corsHeaders}");
+});
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -55,28 +63,4 @@ app.UseCors(); // Enable CORS
 
 app.MapControllers();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
 app.Run("http://0.0.0.0:8080"); // Ensure the application listens on port 8080
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
