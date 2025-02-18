@@ -1,6 +1,6 @@
 # Ignore publish directory
 backend/publish/
-backend/net9.0/
+backend/net8.0/
 backend/publish.zip
 
 # Ignore bin and obj directories
