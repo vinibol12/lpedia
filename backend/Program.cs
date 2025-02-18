@@ -29,6 +29,7 @@ builder.Services.AddSwaggerGen();
 // Configure CORS
 builder.Services.AddCors(options =>
 {
+    Console.WriteLine($"Current Environment: {builder.Environment.EnvironmentName}");
     options.AddDefaultPolicy(policyBuilder =>
     {
         policyBuilder.WithOrigins(builder.Environment.IsDevelopment() 
