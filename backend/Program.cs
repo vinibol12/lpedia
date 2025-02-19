@@ -36,18 +36,36 @@ builder.Services.AddCors(options =>
             ? new[] { "http://localhost:3000", "http://localhost:3001" } // Allow the frontend origins in development
             : new[] { "https://salmon-ocean-04da24500.4.azurestaticapps.net" }) // Allow the production origin
                .AllowAnyHeader()
-               .AllowAnyMethod();
+               .AllowAnyMethod()
+               .WithExposedHeaders("Access-Control-Allow-Origin");
     });
 });
 
 var app = builder.Build();
 
-// Log CORS headers middleware
+// Log request headers middleware
 app.Use(async (context, next) =>
 {
+    Console.WriteLine("Request Headers LOGGING:");
+    foreach (var header in context.Request.Headers)
+    {
+        Console.WriteLine($"{header.Key}: {header.Value}");
+    }
     await next();
     var corsHeaders = context.Response.Headers["Access-Control-Allow-Origin"];
     Console.WriteLine($"CORS Headers: {corsHeaders}");
+});
+
+// Log CORS policy execution
+app.UseCors(policyBuilder =>
+{
+    policyBuilder.WithOrigins(builder.Environment.IsDevelopment() 
+        ? new[] { "http://localhost:3000", "http://localhost:3001" } // Allow the frontend origins in development
+        : new[] { "https://salmon-ocean-04da24500.4.azurestaticapps.net" }) // Allow the production origin
+           .AllowAnyHeader()
+           .AllowAnyMethod()
+           .WithExposedHeaders("Access-Control-Allow-Origin");
+    Console.WriteLine("CORS policy applied.");
 });
 
 // Configure the HTTP request pipeline.
@@ -60,6 +78,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(); // Enable CORS
+
+app.UseAuthorization();
 
 app.MapControllers();
 
