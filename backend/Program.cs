@@ -12,7 +12,8 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .MinimumLevel.Verbose() // Set the minimum level to Verbose
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
     .Enrich.FromLogContext()
     .WriteTo.Console()
     .WriteTo.File("Logs/app.log", rollingInterval: RollingInterval.Day)
@@ -32,12 +33,18 @@ builder.Services.AddCors(options =>
     Console.WriteLine($"Current Environment: {builder.Environment.EnvironmentName}");
     options.AddDefaultPolicy(policyBuilder =>
     {
-        policyBuilder.WithOrigins(builder.Environment.IsDevelopment() 
-            ? new[] { "http://localhost:3000", "http://localhost:3001" } // Allow the frontend origins in development
-            : new[] { "https://salmon-ocean-04da24500.4.azurestaticapps.net" }) // Allow the production origin
-               .AllowAnyHeader()
-               .AllowAnyMethod()
-               .WithExposedHeaders("Access-Control-Allow-Origin");
+        policyBuilder
+            .SetIsOriginAllowed(origin =>
+            {
+                var allowedOrigins = builder.Environment.IsDevelopment()
+                    ? new[] { "http://localhost:3000", "http://localhost:3001" }
+                    : new[] { "https://salmon-ocean-04da24500.4.azurestaticapps.net" };
+                
+                return allowedOrigins.Contains(origin);
+            })
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -56,18 +63,6 @@ app.Use(async (context, next) =>
     Console.WriteLine($"CORS Headers: {corsHeaders}");
 });
 
-// Log CORS policy execution
-app.UseCors(policyBuilder =>
-{
-    policyBuilder.WithOrigins(builder.Environment.IsDevelopment() 
-        ? new[] { "http://localhost:3000", "http://localhost:3001" } // Allow the frontend origins in development
-        : new[] { "https://salmon-ocean-04da24500.4.azurestaticapps.net" }) // Allow the production origin
-           .AllowAnyHeader()
-           .AllowAnyMethod()
-           .WithExposedHeaders("Access-Control-Allow-Origin");
-    Console.WriteLine("CORS policy applied.");
-});
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -75,9 +70,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// Important: UseCors must be called before UseHttpsRedirection and other middleware that might handle the response
+app.UseCors();
 
-app.UseCors(); // Enable CORS
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
