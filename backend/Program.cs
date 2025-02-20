@@ -30,17 +30,28 @@ builder.Services.AddSwaggerGen();
 // Configure CORS
 builder.Services.AddCors(options =>
 {
+    var environment = builder.Environment.EnvironmentName;
+    var assemblyVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+    var commitHash = typeof(Program).Assembly.GetName().Version?.ToString() ?? "unknown";
+    
+    Console.WriteLine($"Application Starting - Environment: {environment}, Version: {assemblyVersion}, CommitHash: {commitHash}");
     Console.WriteLine($"Current Environment: {builder.Environment.EnvironmentName}");
+    
     options.AddDefaultPolicy(policyBuilder =>
     {
+        var allowedOrigins = builder.Environment.IsDevelopment()
+            ? new[] { "http://localhost:3000", "http://localhost:3001" }
+            : new[] { "https://salmon-ocean-04da24500.4.azurestaticapps.net" };
+            
+        Console.WriteLine($"Configuring CORS - Allowed Origins: {string.Join(", ", allowedOrigins)}");
+        Console.WriteLine($"IsDevelopment: {builder.Environment.IsDevelopment()}");
+        
         policyBuilder
             .SetIsOriginAllowed(origin =>
             {
-                var allowedOrigins = builder.Environment.IsDevelopment()
-                    ? new[] { "http://localhost:3000", "http://localhost:3001" }
-                    : new[] { "https://salmon-ocean-04da24500.4.azurestaticapps.net" };
-                
-                return allowedOrigins.Contains(origin);
+                var isAllowed = allowedOrigins.Contains(origin);
+                Console.WriteLine($"Checking origin: {origin} - Allowed: {isAllowed}");
+                return isAllowed;
             })
             .AllowAnyHeader()
             .AllowAnyMethod()
