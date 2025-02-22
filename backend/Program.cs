@@ -2,7 +2,7 @@ using Serilog;
 using Serilog.Events;
 using Microsoft.EntityFrameworkCore;
 using Azure.Storage.Blobs;
-using ARSpaces.Models;
+using FurniFit.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +12,7 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
     .Enrich.FromLogContext()
     .WriteTo.Console()
-    .WriteTo.File("Logs/arspaces.log", rollingInterval: RollingInterval.Day)
+    .WriteTo.File("Logs/furnifit.log", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -21,7 +21,7 @@ builder.Host.UseSerilog();
 builder.Services.AddControllers();
 
 // Configure SQLite
-builder.Services.AddDbContext<ARSpacesContext>(options =>
+builder.Services.AddDbContext<FurniFitContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configure Azure Blob Storage
@@ -57,7 +57,7 @@ if (app.Environment.IsDevelopment())
     // Initialize and seed the database
     using (var scope = app.Services.CreateScope())
     {
-        var context = scope.ServiceProvider.GetRequiredService<ARSpacesContext>();
+        var context = scope.ServiceProvider.GetRequiredService<FurniFitContext>();
         context.Database.EnsureCreated();
     }
 }

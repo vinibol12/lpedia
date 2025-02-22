@@ -46,7 +46,7 @@ const Home = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h3" component="h1" gutterBottom align="center">
-        ARSpaces Furniture Previewer
+        FurniFit Virtual Previewer
       </Typography>
 
       {error && (

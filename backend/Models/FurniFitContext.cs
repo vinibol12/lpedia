@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace ARSpaces.Models;
+namespace FurniFit.Models;
 
-public class ARSpacesContext : DbContext
+public class FurniFitContext : DbContext
 {
-    public ARSpacesContext(DbContextOptions<ARSpacesContext> options)
+    public FurniFitContext(DbContextOptions<FurniFitContext> options)
         : base(options)
     {
     }
@@ -20,21 +20,21 @@ public class ARSpacesContext : DbContext
                 Id = 1,
                 Name = "Modern Sofa",
                 Type = "Sofa",
-                ModelUrl = "https://storage.googleapis.com/ar-furniture-models/modern-sofa.glb"
+                ModelUrl = "https://storage.googleapis.com/furniture-models/modern-sofa.glb"
             },
             new Furniture
             {
                 Id = 2,
                 Name = "Dining Chair",
                 Type = "Chair",
-                ModelUrl = "https://storage.googleapis.com/ar-furniture-models/dining-chair.glb"
+                ModelUrl = "https://storage.googleapis.com/furniture-models/dining-chair.glb"
             },
             new Furniture
             {
                 Id = 3,
                 Name = "Coffee Table",
                 Type = "Table",
-                ModelUrl = "https://storage.googleapis.com/ar-furniture-models/coffee-table.glb"
+                ModelUrl = "https://storage.googleapis.com/furniture-models/coffee-table.glb"
             }
         );
     }

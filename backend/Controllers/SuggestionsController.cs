@@ -1,19 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using OpenAI_API;
-using ARSpaces.Models;
+using FurniFit.Models;
 
-namespace ARSpaces.Controllers;
+namespace FurniFit.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class SuggestionsController : ControllerBase
 {
-    private readonly ARSpacesContext _context;
+    private readonly FurniFitContext _context;
     private readonly IConfiguration _configuration;
     private readonly ILogger<SuggestionsController> _logger;
 
     public SuggestionsController(
-        ARSpacesContext context,
+        FurniFitContext context,
         IConfiguration configuration,
         ILogger<SuggestionsController> logger)
     {

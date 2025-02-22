@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Azure.Storage.Blobs;
 using System.Text.RegularExpressions;
 
-namespace ARSpaces.Controllers;
+namespace FurniFit.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

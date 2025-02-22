@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ARSpaces.Models;
+namespace FurniFit.Models;
 
 public class Furniture
 {

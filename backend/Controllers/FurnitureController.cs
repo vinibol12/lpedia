@@ -1,17 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ARSpaces.Models;
+using FurniFit.Models;
 
-namespace ARSpaces.Controllers;
+namespace FurniFit.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class FurnitureController : ControllerBase
 {
-    private readonly ARSpacesContext _context;
+    private readonly FurniFitContext _context;
     private readonly ILogger<FurnitureController> _logger;
 
-    public FurnitureController(ARSpacesContext context, ILogger<FurnitureController> logger)
+    public FurnitureController(FurniFitContext context, ILogger<FurnitureController> logger)
     {
         _context = context;
         _logger = logger;
