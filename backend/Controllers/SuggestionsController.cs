@@ -1,53 +1,55 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using OpenAI_API;
+using Microsoft.EntityFrameworkCore;
+using FurniFit.Data;
 using FurniFit.Models;
+using OpenAI.Interfaces;
+using OpenAI.ObjectModels.RequestModels;
+using System.Text.Json;
 
-namespace FurniFit.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class SuggestionsController : ControllerBase
+namespace FurniFit.Controllers
 {
-    private readonly FurniFitContext _context;
-    private readonly IConfiguration _configuration;
-    private readonly ILogger<SuggestionsController> _logger;
-
-    public SuggestionsController(
-        FurniFitContext context,
-        IConfiguration configuration,
-        ILogger<SuggestionsController> logger)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class SuggestionsController : ControllerBase
     {
-        _context = context;
-        _configuration = configuration;
-        _logger = logger;
-    }
+        private readonly FurniFitContext _context;
+        private readonly IOpenAIService _openAiService;
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetSuggestions(int id)
-    {
-        var furniture = await _context.Furniture.FindAsync(id);
-        if (furniture == null)
+        public SuggestionsController(FurniFitContext context, IOpenAIService openAiService)
         {
-            return NotFound();
+            _context = context;
+            _openAiService = openAiService;
         }
 
-        try
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSuggestions(int id)
         {
-            var api = new OpenAIAPI(_configuration["OpenAI:ApiKey"]);
-            var chat = api.Chat.CreateConversation();
-            
-            chat.AppendSystemMessage("You are a furniture design expert. Suggest 3 complementary furniture items that would go well with the given piece. Respond in JSON format with an array of suggestions, each containing 'type' and 'description'.");
-            chat.AppendUserInput($"Suggest complementary furniture for a {furniture.Type} in the style of {furniture.Name}");
+            var furniture = await _context.Furniture.FindAsync(id);
+            if (furniture == null)
+            {
+                return NotFound();
+            }
 
-            var response = await chat.GetResponseFromChatbotAsync();
-            
-            _logger.LogInformation("Generated suggestions for furniture {Id}", id);
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error generating suggestions for furniture {Id}", id);
-            return StatusCode(500, "Error generating suggestions");
+            var completionResult = await _openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
+            {
+                Messages = new List<ChatMessage>
+                {
+                    ChatMessage.FromSystem("You are a furniture design expert. Suggest 3 complementary furniture items that would go well with the given piece. Respond in JSON format with an array of suggestions, each containing 'type' and 'description'."),
+                    ChatMessage.FromUser($"Suggest complementary furniture for a {furniture.Category} in the style of {furniture.Name}")
+                },
+                Model = OpenAI.ObjectModels.Models.Gpt_3_5_Turbo
+            });
+
+            if (completionResult.Successful)
+            {
+                return Ok(completionResult.Choices.First().Message.Content);
+            }
+
+            return BadRequest("Failed to generate suggestions");
         }
     }
 }

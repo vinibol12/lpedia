@@ -2,7 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import Container from '@mui/material/Container';
 import Home from './pages/Home';
+import FurniturePreview from './components/FurniturePreview';
 
 const theme = createTheme({
   palette: {
@@ -29,12 +31,21 @@ const theme = createTheme({
   },
 });
 
+// Sample furniture data for testing
+const sampleFurniture = {
+  name: 'Modern Sofa',
+  description: 'A sleek modern grey sofa with clean lines and comfortable cushions',
+};
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
         <Home />
+        <Container>
+          <FurniturePreview furniture={sampleFurniture} />
+        </Container>
       </Router>
     </ThemeProvider>
   );
