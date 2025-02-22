@@ -1,152 +1,33 @@
-# Product Requirements Document
+# requirements.txt
+# AR Furniture Previewer Web App Requirements
+# Date: February 20, 2025
 
-## Project Overview
-Lpedia is a learning platform designed to help users create, manage, and share educational content effectively.
+1. Build a React frontend in frontend/:
+   - Use React Dropzone to allow users to upload a room photo (JPEG/PNG, max 5MB) in frontend/src/components/.
+   - Fetch and display a furniture catalog from the .NET API as a clickable list in frontend/src/pages/.
+   - Integrate 8th Wall WebAR SDK to overlay a selected furniture item's 3D model (.glb) on the uploaded photo.
+   - Show AI-generated complementary furniture suggestions below the preview.
+   - Add frontend/staticwebapp.config.json to proxy /api/* requests to the .NET API.
 
-## Core Features
+2. Build a .NET API backend in backend/:
+   - Use .NET 8 with Entity Framework Core and SQLite to store a furniture catalog in backend/Models/.
+   - Define a Furniture model with fields: ID (int), Name (string), Type (string), 3DModelUrl (string).
+   - Create endpoints in backend/Controllers/:
+     - GET /api/furniture: Return the full catalog as JSON.
+     - POST /api/photos: Accept a photo file, upload to Azure Blob Storage, return the URL.
+     - GET /api/suggestions?itemId={id}: Call OpenAI API and return 3 complementary furniture suggestions.
+   - Seed the database with 5 sample furniture items (e.g., sofa, chair) with free .glb model URLs.
 
-### 1. Content Management
-#### Must Have
-- Create and edit educational content
-- Organize content into categories and topics
-- Support rich text formatting
-- Upload and manage media files (images, videos)
-- Version control for content
+3. Integrate external services:
+   - Use Azure Blob Storage to store uploaded photos, with a container named "room-photos".
+   - Use OpenAI API (model: gpt-3.5-turbo) for suggestions with prompt: "Given a [type], suggest 3 complementary furniture items."
+   - Use 8th Wall WebAR SDK (free tier) for AR rendering, loading .glb 3D models.
 
-#### Nice to Have
-- Content templates
-- Collaborative editing
-- Content preview
-- Auto-save functionality
+4. Deployment:
+   - Host the React app from frontend/build/ on Azure Static Web Apps.
+   - Host the .NET API from backend/ on Azure App Service (SKU: F1 free tier for MVP).
+   - Use Azure Resource Group "ar-furniture-rg" to manage both services.
 
-### 2. User Management
-#### Must Have
-- User registration and authentication
-- User roles (Admin, Editor, Viewer)
-- Profile management
-- Password reset functionality
-
-#### Nice to Have
-- Social login integration
-- Two-factor authentication
-- User activity tracking
-- Custom user roles
-
-### 3. Search and Discovery
-#### Must Have
-- Full-text search functionality
-- Filter content by category/topic
-- Sort results by relevance
-- Basic content recommendations
-
-#### Nice to Have
-- Advanced search filters
-- Tag-based search
-- Personalized recommendations
-- Search history
-
-### 4. Learning Features
-#### Must Have
-- Progress tracking
-- Bookmarking content
-- Note-taking capabilities
-- Learning paths
-
-#### Nice to Have
-- Interactive quizzes
-- Certificates
-- Learning analytics
-- Peer learning features
-
-### 5. Sharing and Collaboration
-#### Must Have
-- Share content via links
-- Export content in common formats
-- Basic commenting system
-- Content ratings
-
-#### Nice to Have
-- Social sharing integration
-- Real-time collaboration
-- Discussion forums
-- Content moderation tools
-
-## Technical Requirements
-
-### Performance
-- Page load time < 2 seconds
-- Search results < 1 second
-- Support for 1000+ concurrent users
-- 99.9% uptime
-
-### Security
-- HTTPS encryption
-- Secure user authentication
-- Regular security audits
-- GDPR compliance
-
-### Scalability
-- Horizontal scaling capability
-- Cloud-native architecture
-- Microservices ready
-- Load balancing
-
-### Integration
-- RESTful API
-- OAuth2 support
-- Webhook support
-- Third-party integration capability
-
-## User Interface Requirements
-
-### Accessibility
-- WCAG 2.1 compliance
-- Screen reader support
-- Keyboard navigation
-- High contrast mode
-
-### Responsive Design
-- Mobile-first approach
-- Support for all major browsers
-- Tablet optimization
-- Consistent cross-device experience
-
-### User Experience
-- Intuitive navigation
-- Clear error messages
-- Helpful onboarding
-- Quick access to common features
-
-## Future Considerations
-- Mobile app development
-- AI-powered features
-- Offline mode
-- Integration with LMS platforms
-- Advanced analytics
-- Gamification features
-
-## Success Metrics
-- User engagement metrics
-- Content creation metrics
-- Learning outcome metrics
-- Platform performance metrics
-- User satisfaction scores
-
-## Timeline and Phases
-### Phase 1 (MVP)
-- Basic content management
-- User authentication
-- Search functionality
-- Essential learning features
-
-### Phase 2
-- Advanced content features
-- Enhanced search
-- Social features
-- Analytics implementation
-
-### Phase 3
-- Mobile app
-- AI features
-- Advanced integrations
-- Platform optimization
+5. Constraints:
+   - Keep the MVP simple: static catalog, no user accounts, basic AR functionality.
+   - Use Azure free tiers (Static Web Apps, App Service F1) for initial build.

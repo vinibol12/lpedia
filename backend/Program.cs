@@ -1,58 +1,48 @@
 using Serilog;
 using Serilog.Events;
+using Microsoft.EntityFrameworkCore;
+using Azure.Storage.Blobs;
+using ARSpaces.Models;
 
-var builder = WebApplication.CreateBuilder(new WebApplicationOptions
-{
-    Args = args,
-    WebRootPath = "wwwroot",
-    ContentRootPath = AppContext.BaseDirectory,
-    ApplicationName = typeof(Program).Assembly.FullName,
-    EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development"
-});
+var builder = WebApplication.CreateBuilder(args);
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Verbose() // Set the minimum level to Verbose
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Verbose)
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
     .Enrich.FromLogContext()
     .WriteTo.Console()
-    .WriteTo.File("Logs/app.log", rollingInterval: RollingInterval.Day)
+    .WriteTo.File("Logs/arspaces.log", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
 builder.Host.UseSerilog();
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+// Configure SQLite
+builder.Services.AddDbContext<ARSpacesContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Configure Azure Blob Storage
+builder.Services.AddSingleton(x => 
+    new BlobServiceClient(builder.Configuration["AzureStorage:ConnectionString"]));
 
 // Configure CORS
 builder.Services.AddCors(options =>
 {
     var environment = builder.Environment.EnvironmentName;
-    var assemblyVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-    var commitHash = typeof(Program).Assembly.GetName().Version?.ToString() ?? "unknown";
-    
-    Console.WriteLine($"Application Starting - Environment: {environment}, Version: {assemblyVersion}, CommitHash: {commitHash}");
-    Console.WriteLine($"Current Environment: {builder.Environment.EnvironmentName}");
-    
-    options.AddDefaultPolicy(policyBuilder =>
-    {
-        var allowedOrigins = builder.Environment.IsDevelopment()
-            ? new[] { "http://localhost:3000", "http://localhost:3001" }
-            : new[] { "https://salmon-ocean-04da24500.4.azurestaticapps.net" };
+    var allowedOrigins = builder.Environment.IsDevelopment()
+        ? new[] { "http://localhost:3000" }
+        : new[] { "https://salmon-ocean-04da24500.4.azurestaticapps.net" };
             
-        Console.WriteLine($"Configuring CORS - Allowed Origins: {string.Join(", ", allowedOrigins)}");
-        Console.WriteLine($"IsDevelopment: {builder.Environment.IsDevelopment()}");
-        
-        policyBuilder
-            .SetIsOriginAllowed(origin =>
-            {
-                var isAllowed = allowedOrigins.Contains(origin);
-                Console.WriteLine($"Checking origin: {origin} - Allowed: {isAllowed}");
-                return isAllowed;
-            })
+    Console.WriteLine($"Configuring CORS - Environment: {environment}");
+    Console.WriteLine($"Allowed Origins: {string.Join(", ", allowedOrigins)}");
+    
+    options.AddDefaultPolicy(policy =>
+    {
+        policy
+            .WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -61,33 +51,23 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Log request headers middleware
-app.Use(async (context, next) =>
-{
-    Console.WriteLine("Request Headers LOGGING:");
-    foreach (var header in context.Request.Headers)
-    {
-        Console.WriteLine($"{header.Key}: {header.Value}");
-    }
-    await next();
-    var corsHeaders = context.Response.Headers["Access-Control-Allow-Origin"];
-    Console.WriteLine($"CORS Headers: {corsHeaders}");
-});
-
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    // Initialize and seed the database
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ARSpacesContext>();
+        context.Database.EnsureCreated();
+    }
 }
 
-// Important: UseCors must be called before UseHttpsRedirection and other middleware that might handle the response
+// Important: UseCors must be called before UseHttpsRedirection
 app.UseCors();
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
-app.Run("http://0.0.0.0:8080"); // Ensure the application listens on port 8080
+// Ensure we're listening on the correct port
+app.Run();

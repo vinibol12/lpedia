@@ -1,0 +1,101 @@
+---
+description: AR Furniture Previewer Rules
+globs: *
+---
+# AR Furniture Previewer Development Rules
+
+Rules for building the AR Furniture Previewer web app with React in frontend/ and .NET in backend/, hosted on Azure.
+
+<rule>
+name: file_structure
+description: Enforce project file structure for React and .NET
+filters:
+  - type: file_extension
+    pattern: "\\.(jsx?|cs|json)$"
+  - type: event
+    pattern: "file_create"
+actions:
+  - type: reject
+    conditions:
+      - pattern: "^(?!\\.\\/(frontend\\/src\\/.*\\.jsx?|backend\\/.*\\.cs|frontend\\/staticwebapp\\.config\\.json)$)"
+        message: |
+          Files must be placed in:
+          - React: ./frontend/src/*.jsx
+          - .NET: ./backend/*.cs
+          - Config: ./frontend/staticwebapp.config.json
+  - type: suggest
+    message: |
+      Project structure:
+
+metadata:
+priority: high
+version: 1.0
+</rule>
+
+<rule>
+name: naming_conventions
+description: Enforce PascalCase for .NET and camelCase for React
+filters:
+    - type: content
+pattern: "(class|function|const|let|var)\\s+(\\w+)"
+actions:
+    - type: reject
+conditions:
+    - pattern: "\\.cs$"
+    subpattern: "(class|public\\s+\\w+\\s+)(\\w+)(?!^[A-Z])"
+    message: "Use PascalCase for .NET class and method names"
+    - pattern: "\\.jsx?$"
+    subpattern: "(function|const|let|var)\\s+(\\w+)(?!^[a-z])"
+    message: "Use camelCase for React function and variable names"
+    - type: suggest
+    message: |
+Examples:
+- .NET: `public class FurnitureController`
+- React: `const furnitureList`
+metadata:
+priority: medium
+version: 1.0
+</rule>
+
+<rule>
+name: api_endpoints
+description: Enforce RESTful API conventions in .NET
+filters:
+  - type: content
+pattern: "(HttpGet|HttpPost)\\(\"(.*?)\"\\)"
+  - type: file_extension
+pattern: "\\.cs$"
+actions:
+  - type: reject
+conditions:
+  - pattern: "Http(Get|Post)\\(\"(?!/api/.*)\""
+    message: "API endpoints must start with /api/"
+  - type: suggest
+message: |
+Use RESTful conventions:
+  - GET /api/furniture
+  - POST /api/photos
+- GET /api/suggestions?itemId={id}
+metadata:
+priority: high
+version: 1.0
+</rule>
+
+<rule>
+name: no_hardcoded_secrets
+description: Prevent hardcoded API keys or secrets
+filters:
+  - type: content
+pattern: "(key|secret|token)\\s*=\\s*[\"'].+[\"']"
+actions:
+  - type: reject
+message: "Do not hardcode secrets. Use environment variables (e.g., process.env.REACT_APP_8TH_WALL_KEY or IConfiguration in .NET)."
+- type: suggest
+message: |
+Store secrets in:
+- React: .env file (e.g., REACT_APP_OPENAI_KEY)
+- .NET: appsettings.json or Azure App Service config
+metadata:
+priority: critical
+version: 1.0
+</rule>
