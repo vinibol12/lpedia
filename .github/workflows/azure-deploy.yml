@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_WEBAPP_NAME: lpediabackend    # set this to your application's name
+  AZURE_WEBAPP_NAME: furnifitbackend    # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: './backend/publish'      # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '8.0.x'           # set this to the dot net version to use
 
@@ -26,8 +26,8 @@ jobs:
       - name: Build with dotnet
         run: |
           cd backend
-          dotnet build --configuration Release
-          dotnet publish -c Release -o ./publish
+          dotnet build FurniFit.csproj --configuration Release
+          dotnet publish FurniFit.csproj -c Release -o ./publish
           
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
