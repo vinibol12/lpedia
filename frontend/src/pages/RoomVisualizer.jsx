@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import RoomPhotoUpload from '../components/RoomPhotoUpload';
 import FurnitureCatalog from '../components/FurnitureCatalog';
-import FurniturePreview from '../components/FurniturePreview';
 import './RoomVisualizer.css';
 
 const RoomVisualizer = () => {
