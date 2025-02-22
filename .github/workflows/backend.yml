@@ -1,4 +1,4 @@
-name: Deploy to Azure
+name: FurniFit Backend Deploy
 
 on:
   push:
@@ -7,28 +7,28 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_WEBAPP_NAME: furnifitbackend    # set this to your application's name
+  AZURE_WEBAPP_NAME: lpediabackend    # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: './backend/publish'      # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '8.0.x'           # set this to the dot net version to use
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-          
+
       - name: Build with dotnet
         run: |
           cd backend
           dotnet build FurniFit.csproj --configuration Release
           dotnet publish FurniFit.csproj -c Release -o ./publish
-          
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
