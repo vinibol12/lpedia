@@ -7,7 +7,7 @@ import {
   Paper,
   Typography
 } from '@mui/material';
-import ChairIcon from '@mui/icons-material/Chair';
+import { Room } from '@mui/icons-material';
 
 const SuggestionsList = ({ suggestions }) => {
   if (!suggestions || suggestions.length === 0) {
@@ -23,7 +23,7 @@ const SuggestionsList = ({ suggestions }) => {
         {suggestions.map((suggestion, index) => (
           <ListItem key={index}>
             <ListItemIcon>
-              <ChairIcon />
+              <Room />
             </ListItemIcon>
             <ListItemText
               primary={suggestion.type}

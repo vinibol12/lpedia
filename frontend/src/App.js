@@ -1,29 +1,43 @@
-import React, { useEffect, useState } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Home from './pages/Home';
 
-const App = () => {
-    const [message, setMessage] = useState('');
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+    background: {
+      default: '#f5f5f5',
+    },
+  },
+  typography: {
+    fontFamily: [
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+    ].join(','),
+  },
+});
 
-    useEffect(() => {
-        console.log('Environment:', process.env.NODE_ENV); // Log the environment
-        const apiUrl = process.env.NODE_ENV === 'development' 
-            ? process.env.REACT_APP_API_URL_DEV 
-            : process.env.REACT_APP_API_URL_PROD;
-        fetch(apiUrl + '/')
-            .then(response => response.json())
-            .then(data => setMessage(data.message))
-            .catch(error => console.error('Error fetching data:', error));
-    }, []);
-
-    return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>{message}</p>
-            </header>
-        </div>
-    );
-};
+function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
+        <Home />
+      </Router>
+    </ThemeProvider>
+  );
+}
 
 export default App;

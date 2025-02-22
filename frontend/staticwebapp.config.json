@@ -1,0 +1,16 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/images/*", "/static/*", "/*.{png,jpg,gif,ico,svg}", "/api/*"]
+  },
+  "routes": [
+    {
+      "route": "/api/*",
+      "methods": ["GET", "POST"],
+      "rewrite": "/api/{*}"
+    }
+  ],
+  "globalHeaders": {
+    "content-security-policy": "default-src 'self' 'unsafe-inline' 'unsafe-eval' https://apps.8thwall.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.8thwall.com https://*.azurewebsites.net wss://*.8thwall.com https://*.blob.core.windows.net https://api.openai.com;"
+  }
+}

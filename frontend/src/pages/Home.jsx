@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Typography, Box } from '@mui/material';
+import { Container, Grid, Typography, Box, Alert } from '@mui/material';
 import PhotoUploader from '../components/PhotoUploader';
 import FurnitureCatalog from '../components/FurnitureCatalog';
 import ARViewer from '../components/ARViewer';
@@ -11,14 +11,17 @@ const Home = () => {
   const [selectedFurniture, setSelectedFurniture] = useState(null);
   const [roomPhotoUrl, setRoomPhotoUrl] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const loadFurniture = async () => {
       try {
         const data = await getFurniture();
         setFurniture(data);
+        setError(null);
       } catch (error) {
         console.error('Error loading furniture:', error);
+        setError('Unable to connect to the backend server. Make sure it is running and properly configured.');
       }
     };
     loadFurniture();
@@ -29,8 +32,10 @@ const Home = () => {
     try {
       const suggestionsData = await getSuggestions(item.id);
       setSuggestions(suggestionsData);
+      setError(null);
     } catch (error) {
       console.error('Error loading suggestions:', error);
+      setError('Error loading suggestions. Make sure the OpenAI API key is configured.');
     }
   };
 
@@ -43,6 +48,12 @@ const Home = () => {
       <Typography variant="h3" component="h1" gutterBottom align="center">
         ARSpaces Furniture Previewer
       </Typography>
+
+      {error && (
+        <Alert severity="warning" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
 
       <Grid container spacing={4}>
         <Grid item xs={12} md={8}>
@@ -69,6 +80,12 @@ const Home = () => {
           {suggestions.length > 0 && <SuggestionsList suggestions={suggestions} />}
         </Grid>
       </Grid>
+
+      {!error && furniture.length === 0 && (
+        <Alert severity="info" sx={{ mt: 3 }}>
+          No furniture items available. Please make sure the database is initialized and seeded with data.
+        </Alert>
+      )}
     </Container>
   );
 };

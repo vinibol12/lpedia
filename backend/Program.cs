@@ -66,8 +66,13 @@ if (app.Environment.IsDevelopment())
 app.UseCors();
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
 app.UseAuthorization();
+
 app.MapControllers();
 
-// Ensure we're listening on the correct port
+// Handle SPA routing - forward all non-API routes to index.html
+app.MapFallbackToFile("index.html");
+
 app.Run();
