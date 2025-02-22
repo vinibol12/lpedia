@@ -1,0 +1,90 @@
+.room-visualizer {
+  padding: 2rem;
+}
+
+.visualizer-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.left-panel, .right-panel {
+  background: white;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.preview-section {
+  margin-top: 2rem;
+}
+
+.instruction {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.image-container {
+  position: relative;
+  cursor: crosshair;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.room-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.placement-marker {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px var(--primary-color);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 102, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 102, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 102, 255, 0);
+  }
+}
+
+.generate-button {
+  margin-top: 1rem;
+  width: 100%;
+}
+
+h2 {
+  margin-bottom: 1.5rem;
+  color: var(--secondary-color);
+}
+
+h3 {
+  margin-bottom: 1rem;
+  color: var(--secondary-color);
+}
+
+@media (max-width: 1024px) {
+  .visualizer-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .right-panel {
+    order: -1;
+  }
+}

@@ -8,7 +8,7 @@ import {
   CardActionArea
 } from '@mui/material';
 
-const FurnitureCatalog = ({ furniture, onSelect }) => {
+const FurnitureCatalog = ({ furniture = [], onSelect }) => {
   return (
     <Grid container spacing={3}>
       {furniture.map((item) => (
